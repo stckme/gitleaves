@@ -5,10 +5,10 @@
 # Format
 
 Leaves
-DDMM [- DDMM], Name
+DDMM [- DDMM], Name  [# Optional reason/comment]
 
 Extra days
-DDMM [- DDMM], Name
+DDMM [- DDMM], Name  [# Optional reason/comment]
 
 Lines starting with comments are ignored
 
