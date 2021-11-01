@@ -5,12 +5,10 @@
 # Format
 
 Leaves
-MMDD [- MMDD], Name  [# Optional reason/comment]
+MMDD [- MMDD], Name, Reason / Details [Optional]
 
 Extra days
-MMDD [- MMDD], Name  [# Optional reason/comment]
-
-Lines starting with comments are ignored
+MMDD [- MMDD], Name, Reason / Details [Optional]
 
 # Process
 - Apply for leave(s) by adding records to leaves.YYYY.csv
