@@ -1,4 +1,4 @@
-# git leaves
+# gitleaves
 
 *Git Based Leaves management system*
 
