@@ -2,4 +2,4 @@
 
 __author__ = """Shekhar Tiwatne"""
 __email__ = 'pythonic@gmail.com'
-__version__ = '0.2.0'
+__version__ = '0.2.1'
