@@ -2,8 +2,19 @@ import arrow
 import calendar
 import csv
 import datetime
+import os
+import pathlib
+
+from jinja2 import FileSystemLoader, Environment
 
 from collections import defaultdict
+
+reports_dir = 'reports'
+srcdir = pathlib.Path(__file__).parent.resolve()
+templates_dir = os.path.join(srcdir, 'template')
+ghwiki_reports_dir = os.path.join(reports_dir, 'ghwiki')
+templates = Environment(loader=FileSystemLoader(templates_dir),
+                        trim_blocks=True)
 
 today = datetime.date.today()
 leaves_csv_path = f'leaves.{today.year}.csv'
@@ -30,6 +41,7 @@ def range2dates(daterange):
 def load_csv(csv_path):
     bydates = defaultdict(list)
     bynames = defaultdict(list)
+    bymonths = defaultdict(lambda: defaultdict(list))
     csv_f = csv.reader(open(csv_path))
     next(csv_f)
     for row in csv_f:
@@ -39,25 +51,19 @@ def load_csv(csv_path):
         for date in dates:
             bydates[date].append(applicant)
             bynames[applicant].append(date)
+            bymonths[date.month][date].append(applicant)
 
-    return {'bydates': bydates, 'bynames': bynames}
+    return {'bydates': bydates, 'bynames': bynames, 'bymonths': bymonths}
 
 
-def filter(data, start=None, end=None, name=None):
-    for row in data:
-        if name and name != applicant:
-            continue
-            if start and (date < start):
-                continue
-            if end and (date > start):
-                continue
-
-month = None
-for d, names in load_csv(leaves_csv_path)['bydates'].items():
-    if month != d.month:
-        month_name = calendar.month_name[d.month]
-        print(f'{month_name}\n===========')
-    print(d, names)
-    month = d.month
-for d, names in load_csv(leaves_csv_path)['bynames'].items():
-    print(d, len(names))
+def gen_ghwiki_reports():
+    data = load_csv(leaves_csv_path)
+    today_leaves = data['bydates'][datetime.date.today()]
+    this_month = datetime.date.today().month
+    next_leaves_by_month = ((calendar.month_name[month], leaves)
+                            for month, leaves in data['bymonths'].items()
+                            if month >= this_month)
+    template = templates.get_template('ghwiki/index.md')
+    with open(f'{ghwiki_reports_dir}/index.md', 'w') as report:
+        report.write(template.render(today_leaves=today_leaves,
+                                     next_leaves_by_month=next_leaves_by_month))

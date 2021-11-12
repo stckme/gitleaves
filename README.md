@@ -1,10 +1,9 @@
-==========
-git leaves
-==========
-Git Based Leaves management system
+# git leaves
+
+*Git Based Leaves management system*
 
 Project status: WIP
-~~~~~~~~~~~~~~~~~~~~
+
 
 .. image:: https://img.shields.io/pypi/v/gitleaves.svg
         :target: https://pypi.python.org/pypi/gitleaves
@@ -21,45 +20,46 @@ Project status: WIP
      :target: https://pyup.io/repos/github/shon/gitleaves/
      :alt: Updates
 
-
+---
 
 * Free software: MIT license
 * Documentation: https://gitleaves.readthedocs.io.
 
-Specifications
----------------
-File names
-~~~~~~~~~~
+## Specifications
+
+### File names
+
 - leaves.\<YYYY\>.csv
 - extras.\<YYYY\>.csv
 
-Format
-~~~~~~~~~~
+### Format
 
-**Leaves**
+### Leaves
 MMDD [- MMDD], Name, Reason / Details [Optional]
 
-**Extra days**
+### Extra days
 MMDD [- MMDD], Name, Reason / Details [Optional]
 
-**Example**
-
-.. code-block:: csv
-    1115 - 1126, Tony Stark, Hawaii
-    1129 - 1210, Peter Parker,
-    1129 - 1202, Bruce Wayne,
-    1220 - 1224, Loki Laufeyson, Smell the flowers
+### Example
 
 
-Process
-~~~~~~~~~~
+```
+1115 - 1126, Tony Stark, Hawaii
+1129 - 1210, Peter Parker,
+1129 - 1202, Bruce Wayne,
+1220 - 1224, Loki Laufeyson, Smell the flowers
+```
+
+
+## Process
+
 - Apply for leave(s) by adding records to leaves.YYYY.csv
 - Optionally mention details/reasons in commit message
 - Raise a PR
 - Leave is approved if the PR is merged
 
-Guidelines
-~~~~~~~~~~~
+## Guidelines
+
 - Do take leaves when necessary :)
 - Make sure you spell your name same everywhere
 - Generally try to add records in order
