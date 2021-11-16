@@ -29,6 +29,16 @@ MMDD [- MMDD], Name, Reason / Details [Optional]
 1220 - 1224, Loki Laufeyson, Smell the flowers
 ```
 
+## Usage
+
+```
+$ pip install gitleaves
+$ mkdir data/
+$ cp leaves.<this-year>.csv data/
+$ gitleaves genreports
+$ ls reports/
+```
+
 ## Process
 
 - Apply for leave(s) by adding records to leaves.YYYY.csv

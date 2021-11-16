@@ -3,15 +3,17 @@ import calendar
 import csv
 import datetime
 import os
+import os.path
 import pathlib
 
-from jinja2 import FileSystemLoader, Environment
 
 from collections import defaultdict
 
-reports_dir = 'reports'
+from jinja2 import FileSystemLoader, Environment
+
 srcdir = pathlib.Path(__file__).parent.resolve()
-templates_dir = os.path.join(srcdir, 'template')
+reports_dir = 'reports'
+templates_dir = os.path.join(srcdir, 'templates')
 ghwiki_reports_dir = os.path.join(reports_dir, 'ghwiki')
 templates = Environment(loader=FileSystemLoader(templates_dir),
                         trim_blocks=True)
@@ -57,13 +59,19 @@ def load_csv(csv_path):
 
 
 def gen_ghwiki_reports():
-    data = load_csv(leaves_csv_path)
+    data = load_csv(os.path.join('data', leaves_csv_path))
     today_leaves = data['bydates'][datetime.date.today()]
     this_month = datetime.date.today().month
     next_leaves_by_month = ((calendar.month_name[month], leaves)
                             for month, leaves in data['bymonths'].items()
                             if month >= this_month)
     template = templates.get_template('ghwiki/index.md')
+    if not os.path.exists(ghwiki_reports_dir):
+        os.makedirs(ghwiki_reports_dir)
     with open(f'{ghwiki_reports_dir}/index.md', 'w') as report:
         report.write(template.render(today_leaves=today_leaves,
                                      next_leaves_by_month=next_leaves_by_month))
+    return ghwiki_reports_dir
+
+def upload_ghwiki_reports():
+    raise NotImplementedError

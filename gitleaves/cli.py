@@ -1,16 +1,22 @@
-"""Console script for gitleaves."""
-import sys
-import click
+import gitleaves.reports as reportslib
+
+from typer import Typer, echo
+
+app = Typer()
 
 
-@click.command()
-def main(args=None):
-    """Console script for gitleaves."""
-    click.echo("Replace this message by putting your code into "
-               "gitleaves.cli.main")
-    click.echo("See click documentation at https://click.palletsprojects.com/")
-    return 0
+@app.command()
+def genreports():
+    echo("Begin reports generation...")
+    outdir = reportslib.gen_ghwiki_reports()
+    echo(f"Reports saved at `{outdir}`")
+
+
+@app.command()
+def uploadreports():
+    echo("Uploading reports...")
+    reportslib.upload_ghwiki_reports()
 
 
 if __name__ == "__main__":
-    sys.exit(main())  # pragma: no cover
+    app()
