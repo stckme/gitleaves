@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
-"""The setup script."""
-
+from os import walk
+from os.path import join, relpath
 from setuptools import setup, find_packages
 
 with open('README.md') as readme_file:
     readme = readme_file.read()
 
-requirements = ['Click>=7.0', ]
+requirements = ['typer', 'arrow']
 
 test_requirements = ['pytest>=3', ]
 
@@ -28,7 +28,7 @@ setup(
     description="Git Based Leaves management system",
     entry_points={
         'console_scripts': [
-            'genreports=gitleaves.cli:genreports',
+            'gitleaves=gitleaves.cli:app',
         ],
     },
     install_requires=requirements,
@@ -39,9 +39,14 @@ setup(
     keywords='gitleaves',
     name='gitleaves',
     packages=find_packages(include=['gitleaves', 'gitleaves.*']),
+    package_data={
+        'gitleaves': [relpath(join(root, name), 'gitleaves')
+                    for root, _, names in walk('gitleaves/templates')
+                    for name in names],
+    },
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/scrollstack/gitleaves',
-    version='0.3.0',
+    version='0.4.0',
     zip_safe=False,
 )
