@@ -28,7 +28,7 @@ setup(
     description="Git Based Leaves management system",
     entry_points={
         'console_scripts': [
-            'gitleaves=gitleaves.cli:main',
+            'genreports=gitleaves.cli:genreports',
         ],
     },
     install_requires=requirements,
@@ -42,6 +42,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/scrollstack/gitleaves',
-    version='0.2.2',
+    version='0.3.0',
     zip_safe=False,
 )
