@@ -40,13 +40,13 @@ setup(
     name='gitleaves',
     packages=find_packages(include=['gitleaves', 'gitleaves.*']),
     package_data={
-        'gitleaves': [relpath(join(root, name), 'gitleaves')
-                    for root, _, names in walk('gitleaves/templates')
+        'gitleaves': [relpath(join(root, name), 'gitleaves/')
+                    for root, _, names in walk(join('gitleaves', 'templates'))
                     for name in names],
     },
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/scrollstack/gitleaves',
-    version='0.4.1',
+    version='0.4.2',
     zip_safe=False,
 )
