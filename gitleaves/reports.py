@@ -65,10 +65,10 @@ def gen_ghwiki_reports():
     next_leaves_by_month = ((calendar.month_name[month], leaves)
                             for month, leaves in data['bymonths'].items()
                             if month >= this_month)
-    template = templates.get_template('ghwiki/index.md')
+    template = templates.get_template('ghwiki/Home.md')
     if not os.path.exists(ghwiki_reports_dir):
         os.makedirs(ghwiki_reports_dir)
-    with open(f'{ghwiki_reports_dir}/index.md', 'w') as report:
+    with open(f'{ghwiki_reports_dir}/Home.md', 'w') as report:
         report.write(template.render(today_leaves=today_leaves,
                                      next_leaves_by_month=next_leaves_by_month))
     return ghwiki_reports_dir
