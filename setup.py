@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 with open('README.md') as readme_file:
     readme = readme_file.read()
 
-requirements = ['typer', 'arrow']
+requirements = ['typer', 'arrow', 'jinja2']
 
 test_requirements = ['pytest>=3', ]
 
