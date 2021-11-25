@@ -43,7 +43,7 @@ def range2dates(daterange):
 def load_csv(csv_path):
     bydates = defaultdict(list)
     bynames = defaultdict(list)
-    bymonths = defaultdict(lambda: defaultdict(list))
+    nextbymonths = defaultdict(lambda: defaultdict(list))
     csv_f = csv.reader(open(csv_path))
     next(csv_f)
     for row in csv_f:
@@ -53,9 +53,10 @@ def load_csv(csv_path):
         for date in dates:
             bydates[date].append(applicant)
             bynames[applicant].append(date)
-            bymonths[date.month][date].append(applicant)
+            if date > today:
+                nextbymonths[date.month][date].append(applicant)
 
-    return {'bydates': bydates, 'bynames': bynames, 'bymonths': bymonths}
+    return {'bydates': bydates, 'bynames': bynames, 'bymonths': nextbymonths}
 
 
 def gen_ghwiki_reports():
@@ -72,6 +73,7 @@ def gen_ghwiki_reports():
         report.write(template.render(today_leaves=today_leaves,
                                      next_leaves_by_month=next_leaves_by_month))
     return ghwiki_reports_dir
+
 
 def upload_ghwiki_reports():
     raise NotImplementedError

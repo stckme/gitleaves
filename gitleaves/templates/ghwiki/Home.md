@@ -13,7 +13,7 @@
 | Date | Name |
 | -----|------|
 {% for date, names in leaves.items() %}
-| {{date.strftime('%B %d')}} | {{names|join(', ')}} |
+| {{date.strftime('%d')}} | {{names|join(', ')}} |
 {% endfor %}
 {% endfor %}
 
