@@ -2,7 +2,12 @@
 
 *Git Based Leaves management system*
 
-Project status: WIP
+Project status: Still in early stage but we use it in production
+
+## Features
+- Pull requests based leaves management. Most natural for software development team
+- Github friendly workflow
+- Generates github wiki friendly markdown reports. Markdown can be used by different static site generators too
 
 ## Specifications
 
@@ -31,36 +36,44 @@ MMDD [- MMDD], Name, Reason / Details [Optional]
 
 ## Usage
 
+### Organization setup
+
+- Create a git repo for your organization's leaves data
+```bash
+mkdir leavesdata
+cd leavesdata
+git init
+mkdir data
+fname=data/leaves.`date +%Y`.csv
+# example data 
+echo `1129 - 1202, Bruce Wayne,` >> $fname
+echo `1220 - 1224, Loki Laufeyson, Smell the flowers` >> $fname
+git commit -a
+git push origin main
 ```
-$ pip install gitleaves
-$ mkdir data/
-$ cp leaves.<this-year>.csv data/
-$ gitleaves genreports
-$ ls reports/
+ 
+- Install gitleaves
+```bash
+pip install gitleaves
 ```
+
+- Generate reports
+```bash
+gitleaves genreports
+ls reports/
+```
+
+- Automate report generation
+<TODO> Document github actions based report generation
 
 ## Process
 
 - Apply for leave(s) by adding records to leaves.YYYY.csv
-- Optionally mention details/reasons in commit message
 - Raise a PR
 - Leave is approved if the PR is merged
 
-## Guidelines
-
-- Do take leaves when necessary :)
-- Make sure you spell your name same everywhere
-- Generally try to add records in order
-- When applying for leaves
-    - make sure you take look at peers leave plans 
-    - ensure that you have a collegue to cover your work while you are away
-    - if necessary, do essential knowledge transfer to ensure that there are no dependencies on you
-    - if you are a major contributor to an important release then avoid immediate leaves after the release
-
 ## Dev Guidelines
 - Human Readable data files (as much possible)
-
-## Features
 
 ## TODO
 
