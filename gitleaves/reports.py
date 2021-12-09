@@ -19,8 +19,10 @@ templates = Environment(loader=FileSystemLoader(templates_dir),
                         trim_blocks=True)
 
 today = datetime.date.today()
-leaves_csv_path = f'leaves.{today.year}.csv'
-extras_csv_path = f'leaves.{today.year}.csv'
+leaves_csv_path_pat = os.path.join('data', 'leaves.{YYYY}.csv')
+extras_csv_path_pat = os.path.join('data', 'extras.{YYYY}.csv')
+leaves_csv_path = leaves_csv_path_pat.format(YYYY=today.year)
+extras_csv_path = extras_csv_path_pat.format(YYYY=today.year)
 
 
 def ddmm2date(s):
@@ -43,7 +45,7 @@ def range2dates(daterange):
 def load_csv(csv_path):
     bydates = defaultdict(list)
     bynames = defaultdict(list)
-    nextbymonths = defaultdict(lambda: defaultdict(list))
+    bymonths = defaultdict(lambda: defaultdict(list))
     csv_f = csv.reader(open(csv_path))
     next(csv_f)
     for row in csv_f:
@@ -53,19 +55,36 @@ def load_csv(csv_path):
         for date in dates:
             bydates[date].append(applicant)
             bynames[applicant].append(date)
-            if date > today:
-                nextbymonths[date.month][date].append(applicant)
+            bymonths[date.month][date].append(applicant)
 
-    return {'bydates': bydates, 'bynames': bynames, 'bymonths': nextbymonths}
+    return {'bydates': bydates, 'bynames': bynames, 'bymonths': bymonths}
+
+
+def get_next_leaves_by_month(bydates):
+    nextbymonths = defaultdict(lambda: defaultdict(list))
+    for date, applicants in bydates.items():
+        if date > today:
+            nextbymonths[date.month][date] = applicants
+    return nextbymonths
+
+
+def export_month_csv(year, month):
+    leaves_csv_path = leaves_csv_path_pat.format(YYYY=year)
+    data = load_csv(leaves_csv_path)
+    outfile = f'/tmp/leaves.{year}.{month}.csv'
+    outdata = ((d.isoformat(), *names)
+               for d, names in
+               data['bymonths'][month].items())
+    csv.writer(open(outfile, 'w')).writerows(outdata)
+    print(f'Data exported to {outfile}')
 
 
 def gen_ghwiki_reports():
-    data = load_csv(os.path.join('data', leaves_csv_path))
+    data = load_csv(leaves_csv_path)
     today_leaves = data['bydates'][datetime.date.today()]
-    this_month = datetime.date.today().month
     next_leaves_by_month = ((calendar.month_name[month], leaves)
-                            for month, leaves in data['bymonths'].items()
-                            if month >= this_month)
+                            for month, leaves
+                            in get_next_leaves_by_month(data['bymonths']))
     template = templates.get_template('ghwiki/Home.md')
     if not os.path.exists(ghwiki_reports_dir):
         os.makedirs(ghwiki_reports_dir)
