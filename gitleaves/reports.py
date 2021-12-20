@@ -82,10 +82,10 @@ def export_month_csv(year, month):
 def gen_ghwiki_reports():
     data = load_csv(leaves_csv_path)
     today_leaves = data['bydates'][datetime.date.today()]
-    catch_next_leaves_by_month = get_next_leaves_by_month(data['bydates'])
+    next_leaves_by_month_temp_jar = get_next_leaves_by_month(data['bydates'])
     next_leaves_by_month = ((calendar.month_name[month], leaves)
                             for month, leaves
-                            in catch_next_leaves_by_month.items())
+                            in next_leaves_by_month_temp_jar.items())
     template = templates.get_template('ghwiki/Home.md')
     if not os.path.exists(ghwiki_reports_dir):
         os.makedirs(ghwiki_reports_dir)
