@@ -8,6 +8,7 @@ import pathlib
 
 
 from collections import defaultdict
+from pprint import pprint
 
 from jinja2 import FileSystemLoader, Environment
 
@@ -46,6 +47,7 @@ def load_csv(csv_path):
     bydates = defaultdict(list)
     bynames = defaultdict(list)
     bymonths = defaultdict(lambda: defaultdict(list))
+    group_of_people_by_month = defaultdict(lambda: defaultdict(list))
     csv_f = csv.reader(open(csv_path))
     next(csv_f)
     for row in csv_f:
@@ -56,8 +58,9 @@ def load_csv(csv_path):
             bydates[date].append(applicant)
             bynames[applicant].append(date)
             bymonths[date.month][date].append(applicant)
+            group_of_people_by_month[calendar.month_name[date.month]][applicant].append(date)
 
-    return {'bydates': bydates, 'bynames': bynames, 'bymonths': bymonths}
+    return {'bydates': bydates, 'bynames': bynames, 'bymonths': bymonths, 'group_of_people_by_month': group_of_people_by_month}
 
 
 def get_next_leaves_by_month(bydates):
@@ -68,15 +71,25 @@ def get_next_leaves_by_month(bydates):
     return nextbymonths
 
 
-def export_month_csv(year, month):
-    leaves_csv_path = leaves_csv_path_pat.format(YYYY=year)
-    data = load_csv(leaves_csv_path)
-    outfile = f'/tmp/leaves.{year}.{month}.csv'
-    outdata = ((d.isoformat(), *names)
-               for d, names in
-               data['bymonths'][month].items())
-    csv.writer(open(outfile, 'w')).writerows(outdata)
-    print(f'Data exported to {outfile}')
+# Shekhar’s original in case Jason messes up, — mjb 12/20/2021
+# def export_month_csv(year, month):
+#     leaves_csv_path = leaves_csv_path_pat.format(YYYY=year)
+#     data = load_csv(leaves_csv_path)
+#     outfile = f'/tmp/leaves.{year}.{month}.csv'
+#     outdata = ((d.isoformat(), *names)
+#                for d, names in
+#                data['bymonths'][month].items())
+#     csv.writer(open(outfile, 'w')).writerows(outdata)
+#     print(f'Data exported to {outfile}')
+
+
+def export_month_csv(some_group_of_people):
+    people_by_month = some_group_of_people['group_of_people_by_month']
+    template = templates.get_template('ghwiki/Monthwise.md')
+    if not os.path.exists(ghwiki_reports_dir):
+        os.makedirs(ghwiki_reports_dir)
+    with open(f'{ghwiki_reports_dir}/Monthwise.md', 'w') as report:
+        report.write(template.render(people_by_month=people_by_month))
 
 
 def gen_ghwiki_reports():
@@ -86,6 +99,7 @@ def gen_ghwiki_reports():
     next_leaves_by_month = ((calendar.month_name[month], leaves)
                             for month, leaves
                             in next_leaves_by_month_temp_jar.items())
+    export_month_csv(data)
     template = templates.get_template('ghwiki/Home.md')
     if not os.path.exists(ghwiki_reports_dir):
         os.makedirs(ghwiki_reports_dir)
