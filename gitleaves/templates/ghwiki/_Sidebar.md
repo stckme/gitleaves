@@ -1,5 +1,5 @@
 # Reports
 
-- [Home](Home.md)
-- [Monthwise Reports](Monthwise.md)
+- [Home](Home)
+- [Monthwise Reports](Monthwise)
 

@@ -1,18 +1,14 @@
-{% for month, people in people_by_month.items() %} 
+{% for month, people in people_by_month.items() %}
 
-## {{ month }}
-
-<br>
+## {{ month }}  
 
 {% for name, days in people.items() %}  
 **{{ name }} :**  
+
 {%- for day in days %}  
 {{ day.strftime('%Y-%m-%d') }}  
 {%- endfor %}  
-<br>
 
-{%- endfor %}
+{% endfor %}
 
----
-
-{%- endfor %}
+{% endfor %}

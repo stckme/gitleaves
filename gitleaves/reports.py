@@ -1,3 +1,5 @@
+import shutil
+
 import arrow
 import calendar
 import csv
@@ -6,7 +8,7 @@ import os
 import os.path
 import pathlib
 
-
+from shutil import copyfile
 from collections import defaultdict
 
 from jinja2 import FileSystemLoader, Environment
@@ -90,6 +92,9 @@ def export_month_csv(some_group_of_people):
     with open(f'{ghwiki_reports_dir}/Monthwise.md', 'w') as report:
         report.write(template.render(people_by_month=people_by_month))
 
+def place_reports():
+    """ Right now just copies the _sidebar. Later might use this to write all the reports """
+    copyfile(f'{templates_dir}/ghwiki/_Sidebar.md', f'{ghwiki_reports_dir}/_Sidebar.md')
 
 def gen_ghwiki_reports():
     data = load_csv(leaves_csv_path)
@@ -99,12 +104,16 @@ def gen_ghwiki_reports():
                             for month, leaves
                             in next_leaves_by_month_temp_jar.items())
     export_month_csv(data)
+
     template = templates.get_template('ghwiki/Home.md')
     if not os.path.exists(ghwiki_reports_dir):
         os.makedirs(ghwiki_reports_dir)
     with open(f'{ghwiki_reports_dir}/Home.md', 'w') as report:
         report.write(template.render(today_leaves=today_leaves,
                                      next_leaves_by_month=next_leaves_by_month))
+
+    place_reports()
+
     return ghwiki_reports_dir
 
 
