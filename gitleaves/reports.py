@@ -8,7 +8,6 @@ import pathlib
 
 
 from collections import defaultdict
-from pprint import pprint
 
 from jinja2 import FileSystemLoader, Environment
 
