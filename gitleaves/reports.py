@@ -1,5 +1,3 @@
-import shutil
-
 import arrow
 import calendar
 import csv
@@ -8,7 +6,6 @@ import os
 import os.path
 import pathlib
 
-from shutil import copyfile
 from collections import defaultdict
 
 from jinja2 import FileSystemLoader, Environment
@@ -19,6 +16,8 @@ templates_dir = os.path.join(srcdir, 'templates')
 ghwiki_reports_dir = os.path.join(reports_dir, 'ghwiki')
 templates = Environment(loader=FileSystemLoader(templates_dir),
                         trim_blocks=True)
+if not os.path.exists(ghwiki_reports_dir):
+    os.makedirs(ghwiki_reports_dir)
 
 today = datetime.date.today()
 leaves_csv_path_pat = os.path.join('data', 'leaves.{YYYY}.csv')
@@ -48,7 +47,7 @@ def load_csv(csv_path):
     bydates = defaultdict(list)
     bynames = defaultdict(list)
     bymonths = defaultdict(lambda: defaultdict(list))
-    group_of_people_by_month = defaultdict(lambda: defaultdict(list))
+    bymonthnames_groupedby_applicants = defaultdict(lambda: defaultdict(list))
     csv_f = csv.reader(open(csv_path))
     next(csv_f)
     for row in csv_f:
@@ -59,9 +58,9 @@ def load_csv(csv_path):
             bydates[date].append(applicant)
             bynames[applicant].append(date)
             bymonths[date.month][date].append(applicant)
-            group_of_people_by_month[calendar.month_name[date.month]][applicant].append(date)
+            bymonthnames_groupedby_applicants[calendar.month_name[date.month]][applicant].append(date)
 
-    return {'bydates': bydates, 'bynames': bynames, 'bymonths': bymonths, 'group_of_people_by_month': group_of_people_by_month}
+    return {'bydates': bydates, 'bynames': bynames, 'bymonths': bymonths, 'bymonthnames_groupedby_applicants': bymonthnames_groupedby_applicants}
 
 
 def get_next_leaves_by_month(bydates):
@@ -72,30 +71,6 @@ def get_next_leaves_by_month(bydates):
     return nextbymonths
 
 
-# Shekhar’s original in case Jason messes up, — mjb 12/20/2021
-# def export_month_csv(year, month):
-#     leaves_csv_path = leaves_csv_path_pat.format(YYYY=year)
-#     data = load_csv(leaves_csv_path)
-#     outfile = f'/tmp/leaves.{year}.{month}.csv'
-#     outdata = ((d.isoformat(), *names)
-#                for d, names in
-#                data['bymonths'][month].items())
-#     csv.writer(open(outfile, 'w')).writerows(outdata)
-#     print(f'Data exported to {outfile}')
-
-
-def export_month_csv(some_group_of_people):
-    people_by_month = some_group_of_people['group_of_people_by_month']
-    template = templates.get_template('ghwiki/Monthwise.md')
-    if not os.path.exists(ghwiki_reports_dir):
-        os.makedirs(ghwiki_reports_dir)
-    with open(f'{ghwiki_reports_dir}/Monthwise.md', 'w') as report:
-        report.write(template.render(people_by_month=people_by_month))
-
-def place_reports():
-    """ Right now just copies the _sidebar. Later might use this to write all the reports """
-    copyfile(f'{templates_dir}/ghwiki/_Sidebar.md', f'{ghwiki_reports_dir}/_Sidebar.md')
-
 def gen_ghwiki_reports():
     data = load_csv(leaves_csv_path)
     today_leaves = data['bydates'][datetime.date.today()]
@@ -103,16 +78,19 @@ def gen_ghwiki_reports():
     next_leaves_by_month = ((calendar.month_name[month], leaves)
                             for month, leaves
                             in next_leaves_by_month_temp_jar.items())
-    export_month_csv(data)
+    people_by_month = data['bymonthnames_groupedby_applicants']
+
+    template = templates.get_template('ghwiki/Monthwise.md')
+    with open(f'{ghwiki_reports_dir}/Monthwise.md', 'w') as report:
+        report.write(template.render(people_by_month=people_by_month))
 
     template = templates.get_template('ghwiki/Home.md')
-    if not os.path.exists(ghwiki_reports_dir):
-        os.makedirs(ghwiki_reports_dir)
     with open(f'{ghwiki_reports_dir}/Home.md', 'w') as report:
         report.write(template.render(today_leaves=today_leaves,
                                      next_leaves_by_month=next_leaves_by_month))
 
-    place_reports()
+    with open(f'{ghwiki_reports_dir}/_Sidebar.md', 'w') as sidebar_file:
+        sidebar_file.write(open(f'{templates_dir}/ghwiki/_Sidebar.md').read())
 
     return ghwiki_reports_dir
 
