@@ -1,5 +1,5 @@
 # Reports
 
-- [Home](Home)
-- [Monthwise Reports](Monthwise)
+- [Dashboard](Home)
+- [Monthwise](Monthwise)
 
