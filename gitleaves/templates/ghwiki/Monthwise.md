@@ -4,12 +4,11 @@
 
 {% for name, days in people.items() %}  
 
-### {{ name }} :  
+### {{ name }}  
 
 {%- for day in days %}  
 1. {{ day.strftime('%Y-%m-%d') }}  
 {%- endfor %}  
-
-{% endfor %}
-
+{% endfor %}  
+<br>  
 {% endfor %}

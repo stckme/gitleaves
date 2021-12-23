@@ -17,4 +17,8 @@
 {% endfor %}
 {% endfor %}
 
-### [Leaves, sorted by individuals? Click here!](Monthwise)
+<br>
+
+---  
+
+**[Dates, sorted monthly by individuals? Click here!](Monthwise)**
