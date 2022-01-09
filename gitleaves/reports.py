@@ -2,6 +2,7 @@ import arrow
 import calendar
 import csv
 import datetime
+import glob
 import os
 import os.path
 import pathlib
@@ -22,8 +23,11 @@ if not os.path.exists(ghwiki_reports_dir):
 today = datetime.date.today()
 leaves_csv_path_pat = os.path.join('data', 'leaves.{YYYY}.csv')
 extras_csv_path_pat = os.path.join('data', 'extras.{YYYY}.csv')
-leaves_csv_path = leaves_csv_path_pat.format(YYYY=today.year)
 extras_csv_path = extras_csv_path_pat.format(YYYY=today.year)
+
+leaves_csv_paths = {int(path.split('leaves.')[1][:-4]): path
+                    for path in
+                    glob.glob(os.path.join('data', 'leaves.*.csv'))}
 
 
 def ddmm2date(s):
@@ -37,7 +41,10 @@ def range2dates(daterange):
     """
     if '-' in daterange:
         start, end = [ddmm2date(d) for d in daterange.split('-')]
-        dates = arrow.Arrow.range('day', start, end)
+        dates = [start] if start == end else arrow.Arrow.range('day', start, end)
+    elif '–' in daterange:
+        start, end = [ddmm2date(d) for d in daterange.split('–')]
+        dates = [start] if start == end else arrow.Arrow.range('day', start, end)
     else:
         dates = [ddmm2date(daterange)]
     return [d.date() for d in dates]
@@ -71,26 +78,40 @@ def get_next_leaves_by_month(bydates):
     return nextbymonths
 
 
-def gen_ghwiki_reports():
-    data = load_csv(leaves_csv_path)
-    today_leaves = data['bydates'][datetime.date.today()]
-    next_leaves_by_month_temp_jar = get_next_leaves_by_month(data['bydates'])
-    next_leaves_by_month = ((calendar.month_name[month], leaves)
-                            for month, leaves
-                            in next_leaves_by_month_temp_jar.items())
+def gen_for_year(year, data):
     people_by_month = data['bymonthnames_groupedby_applicants']
 
     template = templates.get_template('ghwiki/Monthwise.md')
-    with open(f'{ghwiki_reports_dir}/Monthwise.md', 'w') as report:
+    with open(f'{ghwiki_reports_dir}/Monthwise.{year}.md', 'w') as report:
         report.write(template.render(people_by_month=people_by_month))
+
+
+def gen_ghwiki_reports():
+    for year, path in leaves_csv_paths.items():
+        yr_data = load_csv(leaves_csv_path_pat.format(YYYY=year))
+        gen_for_year(year, yr_data)
+        if year == today.year:
+            c_yr_data = yr_data  # current year data
+
+    today_leaves = c_yr_data['bydates'][datetime.date.today()]
+    _ = get_next_leaves_by_month(c_yr_data['bydates'])
+    next_leaves_by_month = ((calendar.month_name[month], leaves)
+                            for month, leaves
+                            in _.items())
 
     template = templates.get_template('ghwiki/Home.md')
     with open(f'{ghwiki_reports_dir}/Home.md', 'w') as report:
         report.write(template.render(today_leaves=today_leaves,
-                                     next_leaves_by_month=next_leaves_by_month))
+                                     next_leaves_by_month=next_leaves_by_month,
+                                     ))
 
-    with open(f'{ghwiki_reports_dir}/_Sidebar.md', 'w') as sidebar_file:
-        sidebar_file.write(open(f'{templates_dir}/ghwiki/_Sidebar.md').read())
+    template = templates.get_template('ghwiki/_Sidebar.md')
+    earlier_years = sorted(leaves_csv_paths.keys())
+    with open(f'{ghwiki_reports_dir}/_Sidebar.md', 'w') as report:
+        report.write(template.render(today_leaves=today_leaves,
+                                     next_leaves_by_month=next_leaves_by_month,
+                                     earlier_years=earlier_years
+                                     ))
 
     return ghwiki_reports_dir
 
