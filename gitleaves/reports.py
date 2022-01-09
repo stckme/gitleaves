@@ -106,11 +106,12 @@ def gen_ghwiki_reports():
                                      ))
 
     template = templates.get_template('ghwiki/_Sidebar.md')
-    earlier_years = sorted(leaves_csv_paths.keys())
+    earlier_years = sorted(leaves_csv_paths.keys(), reverse=True)
     with open(f'{ghwiki_reports_dir}/_Sidebar.md', 'w') as report:
         report.write(template.render(today_leaves=today_leaves,
                                      next_leaves_by_month=next_leaves_by_month,
-                                     earlier_years=earlier_years
+                                     earlier_years=earlier_years,
+                                     c_year=today_leaves.year
                                      ))
 
     return ghwiki_reports_dir

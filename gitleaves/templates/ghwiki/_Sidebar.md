@@ -1,9 +1,9 @@
 # Reports
 
 - [Dashboard](Home)
-- [Monthwise](Monthwise)
+- [Monthwise](Monthwise.{{ c_year }})
 
 **Archives**
 {% for year in earlier_years %}
-- [{{ year }}](/year/{{ year }}.md)
+- [{{ year }}](Monthwise.{{ year }})
 {% endfor %}
