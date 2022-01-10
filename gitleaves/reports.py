@@ -111,7 +111,7 @@ def gen_ghwiki_reports():
         report.write(template.render(today_leaves=today_leaves,
                                      next_leaves_by_month=next_leaves_by_month,
                                      earlier_years=earlier_years,
-                                     c_year=today_leaves.year
+                                     c_year=today.year
                                      ))
 
     return ghwiki_reports_dir
