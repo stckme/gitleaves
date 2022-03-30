@@ -63,8 +63,15 @@ gitleaves genreports
 ls reports/
 ```
 
-- Automate report generation
-<TODO> Document github actions based report generation
+- Automate report generation  
+If the leaves git repo is hosted on Github, the actions in the `sample-workflow`  directory can help you publish it to the repo’s wiki
+  1. Ensure that a [wiki is enabled for your repo](https://docs.github.com/en/communities/documenting-your-project-with-wikis/)
+  2. We will also need 
+     1. a Github [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
+     2. which needs to be added as a [secret to your repo](https://docs.github.com/en/actions/security-guides/encrypted-secrets)
+        1. the key name should be `GH_PERSONAL_ACCESS_TOKEN`  (since that is what we call it in our actions.) and its value should be the token you created.
+  3. Copy the two `.yml`  files in the `sample-workflows`  directory in this repo to the `.github/workflows/` directory of your repo. 
+  4. And then, whenever there’s a push to the `data`  directory in the main branch, the actions will generate a reports wiki in the Github Wiki section. 
 
 ## Process
 
